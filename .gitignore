@@ -1,4 +1,6 @@
 
 starter/.idea/
 
+starter/apikey.properties
+
 starter/app/google-services.json
