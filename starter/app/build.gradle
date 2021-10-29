@@ -21,7 +21,8 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "MAPS_KEY", apikeyProperties['MAPS_KEY'])
+        manifestPlaceholders= [ MAPS_KEY:apikeyProperties['MAPS_KEY'] ]
+
     }
     buildTypes {
         release {
