@@ -46,6 +46,7 @@ class AuthenticationActivity : AppCompatActivity() {
         val signInIntent = AuthUI.getInstance()
             .createSignInIntentBuilder()
             .setAvailableProviders(providers)
+            .setLogo(R.drawable.map)
             .build()
 
         startActivityForResult(signInIntent, SIGN_IN_REQUEST_CODE)
