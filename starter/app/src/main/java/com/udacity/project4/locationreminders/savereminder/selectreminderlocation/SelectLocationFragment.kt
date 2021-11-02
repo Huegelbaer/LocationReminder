@@ -114,7 +114,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback  {
                 map.moveCamera(
                     CameraUpdateFactory.newLatLngZoom(
                         LatLng(lastLocation.latitude, lastLocation.longitude),
-                        1.0F
+                        16.0F
                     )
                 )
             }
