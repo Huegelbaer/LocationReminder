@@ -33,7 +33,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-class SelectLocationFragment : BaseFragment(), OnMapReadyCallback, GoogleMap.OnPoiClickListener {
+class SelectLocationFragment : BaseFragment(), OnMapReadyCallback, GoogleMap.OnPoiClickListener, GoogleMap.OnMapLongClickListener {
 
     //Use Koin to get the view model of the SaveReminder
     override val _viewModel: SaveReminderViewModel by inject()
@@ -108,9 +108,10 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback, GoogleMap.OnP
 
     private fun setupMap(map: GoogleMap) {
         googleMap = map
-        map.setOnPoiClickListener(this)
         map.uiSettings.isZoomControlsEnabled = true
         map.uiSettings.isCompassEnabled = true
+        map.setOnMapLongClickListener(this)
+        map.setOnPoiClickListener(this)
     }
 
     private fun getDeviceLocation(map: GoogleMap) {
@@ -134,6 +135,14 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback, GoogleMap.OnP
                     )
                 )
             }
+        }
+    }
+
+    override fun onMapLongClick(p0: LatLng?) {
+        p0?.let { latLng ->
+            val poi = PointOfInterest(latLng, "", "Custom location")
+            setMarker(poi)
+            _viewModel.selectedPOI.value = poi
         }
     }
 
