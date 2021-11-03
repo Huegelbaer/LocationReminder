@@ -29,13 +29,17 @@ import com.udacity.project4.databinding.FragmentSelectLocationBinding
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
 import org.koin.android.ext.android.inject
+import com.google.android.gms.maps.model.MarkerOptions
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SelectLocationFragment : BaseFragment(), OnMapReadyCallback  {
+
+class SelectLocationFragment : BaseFragment(), OnMapReadyCallback, GoogleMap.OnPoiClickListener {
 
     //Use Koin to get the view model of the SaveReminder
     override val _viewModel: SaveReminderViewModel by inject()
     private lateinit var binding: FragmentSelectLocationBinding
 
+    private lateinit var googleMap: GoogleMap
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -94,8 +98,19 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback  {
 
     override fun onMapReady(p0: GoogleMap?) {
         p0?.let { map ->
+            setupMap(map)
             getDeviceLocation(map)
+            _viewModel.selectedPOI.value?.let { poi ->
+                setMarker(poi)
+            }
         }
+    }
+
+    private fun setupMap(map: GoogleMap) {
+        googleMap = map
+        map.setOnPoiClickListener(this)
+        map.uiSettings.isZoomControlsEnabled = true
+        map.uiSettings.isCompassEnabled = true
     }
 
     private fun getDeviceLocation(map: GoogleMap) {
@@ -105,6 +120,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback  {
             ) != PackageManager.PERMISSION_GRANTED) {
             return
         }
+
         map.isMyLocationEnabled = true
 
         val lastLocationTask = LocationServices.getFusedLocationProviderClient(requireActivity())
@@ -119,6 +135,21 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback  {
                 )
             }
         }
+    }
 
+    override fun onPoiClick(p0: PointOfInterest?) {
+        p0?.let { poi ->
+            setMarker(poi)
+            _viewModel.selectedPOI.value = poi
+        }
+    }
+
+    private fun setMarker(poi: PointOfInterest) {
+        googleMap.clear()
+        googleMap.addMarker(
+            MarkerOptions()
+                .position(poi.latLng)
+                .title(poi.name)
+        )
     }
 }
