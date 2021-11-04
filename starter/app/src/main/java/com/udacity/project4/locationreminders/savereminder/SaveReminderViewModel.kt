@@ -18,11 +18,10 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
     BaseViewModel(app) {
     val reminderTitle = MutableLiveData<String>()
     val reminderDescription = MutableLiveData<String>()
-    val reminderSelectedLocationStr: LiveData<String>
-        get() = Transformations.map(selectedPOI) { it.name }
     val selectedPOI = MutableLiveData<PointOfInterest>()
-    val latitude = MutableLiveData<Double>()
-    val longitude = MutableLiveData<Double>()
+    val reminderSelectedLocationStr = Transformations.map(selectedPOI) { it.name }
+    val latitude = Transformations.map(selectedPOI) { it.latLng.latitude }
+    val longitude = Transformations.map(selectedPOI) { it.latLng.longitude }
 
     /**
      * Clear the live data objects to start fresh next time the view model gets called
@@ -31,8 +30,6 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
         reminderTitle.value = null
         reminderDescription.value = null
         selectedPOI.value = null
-        latitude.value = null
-        longitude.value = null
     }
 
     /**
