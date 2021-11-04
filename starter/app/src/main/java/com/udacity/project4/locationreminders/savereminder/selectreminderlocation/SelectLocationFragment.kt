@@ -112,6 +112,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback, GoogleMap.OnP
         map.uiSettings.isCompassEnabled = true
         map.setOnMapLongClickListener(this)
         map.setOnPoiClickListener(this)
+        map.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.map_style))
     }
 
     private fun getDeviceLocation(map: GoogleMap) {
