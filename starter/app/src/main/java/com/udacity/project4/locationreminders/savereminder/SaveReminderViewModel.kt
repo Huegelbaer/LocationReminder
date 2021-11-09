@@ -18,11 +18,22 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
     BaseViewModel(app) {
     val reminderTitle = MutableLiveData<String>()
     val reminderDescription = MutableLiveData<String>()
-    val reminderSelectedLocationStr: LiveData<String>
-        get() = Transformations.map(selectedPOI) { it.name }
     val selectedPOI = MutableLiveData<PointOfInterest>()
-    val latitude = MutableLiveData<Double>()
-    val longitude = MutableLiveData<Double>()
+    val selectedLocation: LiveData<Location> = Transformations.map(selectedPOI) {
+        it?.let {
+            Location(it.name, it.latLng.latitude, it.latLng.longitude)
+        }
+    }
+    private val _geofenceEvent = MutableLiveData<Location?>()
+    val addGeofenceEvent: LiveData<Location?>
+        get() = _geofenceEvent
+
+    data class Location(
+        var name: String,
+        var latitude: Double,
+        var longitude: Double
+    )
+
 
     /**
      * Clear the live data objects to start fresh next time the view model gets called
@@ -31,8 +42,6 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
         reminderTitle.value = null
         reminderDescription.value = null
         selectedPOI.value = null
-        latitude.value = null
-        longitude.value = null
     }
 
     /**
@@ -41,6 +50,8 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
     fun validateAndSaveReminder(reminderData: ReminderDataItem) {
         if (validateEnteredData(reminderData)) {
             saveReminder(reminderData)
+            _geofenceEvent.value =
+                Location(reminderData.title!!, reminderData.latitude!!, reminderData.longitude!!)
         }
     }
 
@@ -80,5 +91,13 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
             return false
         }
         return true
+    }
+
+    fun onAddGeofenceCompleted() {
+        _geofenceEvent.value = null
+    }
+
+    fun onAddGeofenceFailed() {
+        showSnackBarInt.value = R.string.error_adding_geofence
     }
 }
