@@ -4,7 +4,10 @@ import android.Manifest
 import android.app.PendingIntent
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +20,7 @@ import com.google.android.gms.location.GeofencingRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
+import com.udacity.project4.BuildConfig
 import com.udacity.project4.R
 import com.udacity.project4.base.BaseFragment
 import com.udacity.project4.base.NavigationCommand
@@ -34,6 +38,9 @@ class SaveReminderFragment : BaseFragment() {
 
     companion object {
         private const val REQUEST_LOCATION_PERMISSION = 1
+        private const val REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE = 3
+        private const val REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE = 4
+        private const val REQUEST_TURN_DEVICE_LOCATION_ON = 29
     }
 
     private val geofencePendingIntent: PendingIntent by lazy {
@@ -132,25 +139,33 @@ class SaveReminderFragment : BaseFragment() {
     }
 
     private fun checkPermissionAndNavigationToSelectLocationIfGranted() {
-        when {
-            ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED -> {
-                // You can use the API that requires the permission.
-                navigateToSelectLocation()
+        val foreground = PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+
+        val background =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+            } else {
+                true
             }
-            shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) -> {
-                showLocationPermissionExplanation()
+
+        if (foreground && background) {
+            navigateToSelectLocation()
+            return
+        }
+
+        var permissions = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
+
+        val resultCode = when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
+                permissions += Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE
             }
             else -> {
-                // You can directly ask for the permission.
-                requestPermissions(
-                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                    REQUEST_LOCATION_PERMISSION
-                )
+                REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE
             }
         }
+
+        requestPermissions(permissions, resultCode)
     }
 
     private fun navigateToSelectLocation() {
@@ -176,11 +191,23 @@ class SaveReminderFragment : BaseFragment() {
         when (requestCode) {
             REQUEST_LOCATION_PERMISSION -> {
                 // If request is cancelled, the result arrays are empty.
-                if ((grantResults.isNotEmpty() &&
-                            grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                    (requestCode == REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE && grantResults[1] == PackageManager.PERMISSION_DENIED)) {
                     navigateToSelectLocation()
                 } else {
-                    showLocationPermissionExplanation()
+                    Snackbar.make(
+                        requireView(),
+                        R.string.permission_denied_explanation,
+                        Snackbar.LENGTH_INDEFINITE
+                    )
+                        .setAction(R.string.settings) {
+                            startActivity(Intent().apply {
+                                action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                                data = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)
+                                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                            })
+                        }
+                        .show()
                 }
                 return
             }
