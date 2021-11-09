@@ -14,10 +14,11 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.test.AutoCloseKoinTest
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
-class SaveReminderViewModelTest {
+class SaveReminderViewModelTest: AutoCloseKoinTest() {
 
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
@@ -31,6 +32,13 @@ class SaveReminderViewModelTest {
     fun setup() {
         fakeDataSource = FakeDataSource()
         saveReminderViewModel = SaveReminderViewModel(ApplicationProvider.getApplicationContext(), fakeDataSource)
+    }
+
+    @Test
+    fun saveEmptyReminder_displayTitleError() {
+        val reminder = ReminderDataItem(null, null, null, null, null, "1")
+        saveReminderViewModel.validateAndSaveReminder(reminder)
+        assertThat(saveReminderViewModel.showSnackBarInt.getOrAwaitValue(), `is`(R.string.err_enter_title))
     }
 
 
