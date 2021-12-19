@@ -51,7 +51,7 @@ class SaveReminderViewModel(val app: Application, val dataSource: ReminderDataSo
         if (validateEnteredData(reminderData)) {
             saveReminder(reminderData)
             _geofenceEvent.value =
-                Location(reminderData.title!!, reminderData.latitude!!, reminderData.longitude!!)
+                Location(reminderData.id, reminderData.latitude!!, reminderData.longitude!!)
         }
     }
 
