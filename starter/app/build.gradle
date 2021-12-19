@@ -43,6 +43,16 @@ android {
         returnDefaultValues = true
     }
 
+    sourceSets {
+        String sharedTestDir = 'src/sharedTest/java'
+        test {
+            java.srcDir sharedTestDir
+        }
+        androidTest {
+            java.srcDir sharedTestDir
+        }
+    }
+
     //dataBinding {
     //    enabled = true
     //    enabledForTests = true
@@ -68,7 +78,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.8'
 
     // Auth with Firebase
-    implementation 'com.firebaseui:firebase-ui-auth:5.0.0'
+    implementation 'com.firebaseui:firebase-ui-auth:7.2.0'
 
     // Architecture Components
     //Navigation dependencies
@@ -92,8 +102,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion"
 
     //Koin
-    implementation "org.koin:koin-android:$koinVersion"
-    implementation "org.koin:koin-androidx-viewmodel:$koinVersion"
+    implementation "io.insert-koin:koin-android:$koinVersion"
 
 
     // Dependencies for local unit tests
@@ -130,7 +139,11 @@ dependencies {
     implementation "androidx.fragment:fragment-ktx:$fragmentVersion"
     androidTestImplementation "org.mockito:mockito-core:$mockitoVersion"
     androidTestImplementation "com.linkedin.dexmaker:dexmaker-mockito:$dexMakerVersion"
-    androidTestImplementation('org.koin:koin-test:2.0.1') { exclude group: 'org.mockito' }
+    androidTestImplementation("io.insert-koin:koin-test:$koinVersion") { exclude group: 'org.mockito' }
+    androidTestImplementation("io.insert-koin:koin-test-junit4:$koinVersion")
+
+    testImplementation("io.insert-koin:koin-test:$koinVersion") { exclude group: 'org.mockito' }
+    testImplementation("io.insert-koin:koin-test-junit4:$koinVersion")
 
 
 

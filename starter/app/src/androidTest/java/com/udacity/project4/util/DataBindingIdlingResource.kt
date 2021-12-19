@@ -21,8 +21,13 @@ import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.testing.FragmentScenario
+import androidx.fragment.app.testing.withFragment
+import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.IdlingResource
+import com.udacity.project4.locationreminders.reminderslist.ReminderListFragment
+import com.udacity.project4.locationreminders.savereminder.SaveReminderFragment
 import java.util.UUID
 
 /**
@@ -104,8 +109,14 @@ fun DataBindingIdlingResource.monitorActivity(
 /**
  * Sets the fragment from a [FragmentScenario] to be used from [DataBindingIdlingResource].
  */
-fun DataBindingIdlingResource.monitorFragment(fragmentScenario: FragmentScenario<out Fragment>) {
-    fragmentScenario.onFragment {
-        this.activity = it.requireActivity()
+fun DataBindingIdlingResource.monitorReminderListFragment(fragmentScenario: FragmentScenario<ReminderListFragment>) {
+    fragmentScenario.onFragment { fragment ->
+        activity = fragment.requireActivity()
+    }
+}
+
+fun DataBindingIdlingResource.monitorSaveReminderFragment(fragmentScenario: FragmentScenario<SaveReminderFragment>) {
+    fragmentScenario.onFragment { fragment ->
+        activity = fragment.requireActivity()
     }
 }
