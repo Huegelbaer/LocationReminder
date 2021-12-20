@@ -1,8 +1,9 @@
-package com.udacity.project4.locationreminders
+package com.udacity.project4.locationreminders.details
 
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.udacity.project4.R
@@ -26,12 +27,15 @@ class ReminderDescriptionActivity : AppCompatActivity() {
     }
 
     private lateinit var binding: ActivityReminderDescriptionBinding
+    private val viewModel: ReminderDescriptionViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(
             this,
             R.layout.activity_reminder_description
         )
+        binding.viewModel = viewModel
 //        TODO: Add the implementation of the reminder details
     }
 }

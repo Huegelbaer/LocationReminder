@@ -8,6 +8,10 @@
         <variable
             name="reminderDataItem"
             type="com.udacity.project4.locationreminders.reminderslist.ReminderDataItem" />
+
+        <variable
+            name="viewModel"
+            type="com.udacity.project4.locationreminders.details.ReminderDescriptionViewModel" />
     </data>
 
     <LinearLayout
