@@ -3,11 +3,13 @@ package com.udacity.project4.locationreminders.details
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.viewModels
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import com.udacity.project4.R
 import com.udacity.project4.databinding.ActivityReminderDescriptionBinding
+import com.udacity.project4.locationreminders.RemindersActivity
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
 import org.koin.android.ext.android.inject
 
@@ -28,16 +30,34 @@ class ReminderDescriptionActivity : AppCompatActivity() {
     }
 
     private lateinit var binding: ActivityReminderDescriptionBinding
-    private val viewModel: ReminderDescriptionViewModel by inject()
+    private val _viewModel: ReminderDescriptionViewModel by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        setupViewModel()
+        setupBinding()
+    }
+
+    private fun setupViewModel() {
+        _viewModel.showToast.observe(this, Observer {
+            Toast.makeText(this, it, Toast.LENGTH_LONG).show()
+        })
+
+        _viewModel.navigateBack.observe(this, Observer {
+            val intent = Intent(this, RemindersActivity::class.java)
+            finish()
+            startActivity(intent)
+        })
+    }
+
+    private fun setupBinding() {
         binding = DataBindingUtil.setContentView(
             this,
             R.layout.activity_reminder_description
         )
-        binding.viewModel = viewModel
-        binding.reminderDataItem = intent.getSerializableExtra(EXTRA_ReminderDataItem) as ReminderDataItem?
-//        TODO: Add the implementation of the reminder details
+        binding.viewModel = _viewModel
+        binding.reminderDataItem =
+            intent.getSerializableExtra(EXTRA_ReminderDataItem) as ReminderDataItem?
     }
 }
