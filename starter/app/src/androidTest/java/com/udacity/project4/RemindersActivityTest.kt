@@ -90,7 +90,7 @@ class RemindersActivityTest :
 
         onView(withId(R.id.selectLocation)).perform(click())
         onView(withId(R.id.map)).perform(longClick())
-        Espresso.pressBack()
+        onView(withId(R.id.saveLocation)).perform(click())
 
         val selectedLocation = saveReminderViewModel.selectedLocation.value
         checkNotNull(selectedLocation)
