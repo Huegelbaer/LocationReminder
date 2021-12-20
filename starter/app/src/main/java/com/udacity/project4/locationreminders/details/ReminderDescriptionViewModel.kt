@@ -15,13 +15,10 @@ class ReminderDescriptionViewModel(val app: Application,
 
     val navigateBack: SingleLiveEvent<Boolean> = SingleLiveEvent()
     val showToast: SingleLiveEvent<String> = SingleLiveEvent()
-    val showLoading: SingleLiveEvent<Boolean> = SingleLiveEvent()
 
     fun markAsComplete(reminderData: ReminderDataItem) {
-        showLoading.value = true
         viewModelScope.launch {
             dataSource.deleteReminder(reminderData.id)
-            showLoading.value = false
             showToast.value = app.getString(R.string.reminder_saved)
             navigateBack.value = true
         }

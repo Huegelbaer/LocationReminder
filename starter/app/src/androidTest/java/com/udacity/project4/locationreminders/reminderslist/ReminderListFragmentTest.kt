@@ -61,7 +61,7 @@ class ReminderListFragmentTest: AutoCloseKoinTest() {
             single {
                 SaveReminderViewModel(appContext, get() as ReminderDataSource)
             }
-            single { RemindersLocalRepository(get()) as ReminderDataSource }
+            single { RemindersLocalRepository(get()) as ReminderDataSource}
             single { LocalDB.createRemindersDao(appContext) }
         }
         startKoin {
@@ -72,7 +72,7 @@ class ReminderListFragmentTest: AutoCloseKoinTest() {
     }
 
     @Test
-    fun clearData_displayNoData() = mainCoroutineRule.runBlockingTest {
+    fun clearData_displayNoData(): Unit = mainCoroutineRule.runBlockingTest {
         // GIVEN - empty reminders
         runBlocking {
             repository.apply {
@@ -88,7 +88,7 @@ class ReminderListFragmentTest: AutoCloseKoinTest() {
     }
 
     @Test
-    fun addOneReminder_displayInUI() = mainCoroutineRule.runBlockingTest {
+    fun addOneReminder_displayInUI(): Unit = mainCoroutineRule.runBlockingTest {
         // GIVEN - empty reminders
         val reminder = ReminderDTO("Test", null, "Location", 50.0, 8.0)
 

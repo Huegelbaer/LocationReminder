@@ -18,12 +18,8 @@ package com.udacity.project4.util
 import android.view.View
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.testing.FragmentScenario
-import androidx.fragment.app.testing.withFragment
-import androidx.navigation.Navigation
-import androidx.navigation.fragment.findNavController
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.IdlingResource
 import com.udacity.project4.locationreminders.reminderslist.ReminderListFragment
