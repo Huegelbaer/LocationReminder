@@ -19,8 +19,11 @@ class SaveReminderViewModel(val app: Application, private val dataSource: Remind
 
     val reminderTitle = MutableLiveData<String>()
     val reminderDescription = MutableLiveData<String>()
-    val selectedPOI = MutableLiveData<PointOfInterest>()
-    val selectedLocation: LiveData<Location> = Transformations.map(selectedPOI) {
+
+    private var selectedPOI: PointOfInterest? = null
+    val hasSelectedPOI = MutableLiveData(false)
+    val savedPOI = MutableLiveData<PointOfInterest>()
+    val selectedLocation: LiveData<Location> = Transformations.map(savedPOI) {
         it?.let {
             Location(it.name, it.latLng.latitude, it.latLng.longitude)
         }
@@ -42,7 +45,9 @@ class SaveReminderViewModel(val app: Application, private val dataSource: Remind
     fun onClear() {
         reminderTitle.value = null
         reminderDescription.value = null
-        selectedPOI.value = null
+        savedPOI.value = null
+        selectedPOI = null
+        hasSelectedPOI.value = false
     }
 
     /**
@@ -100,5 +105,17 @@ class SaveReminderViewModel(val app: Application, private val dataSource: Remind
 
     fun onAddGeofenceFailed() {
         showSnackBarInt.value = R.string.error_adding_geofence
+    }
+
+    fun selectLocation(poi: PointOfInterest) {
+        selectedPOI = poi
+        hasSelectedPOI.value = true
+    }
+
+    fun saveLocation() {
+        selectedPOI.let {
+            savedPOI.value = it
+            navigationCommand.value = NavigationCommand.Back
+        }
     }
 }

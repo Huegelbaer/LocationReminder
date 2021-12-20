@@ -23,5 +23,19 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/floatingActionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:layout_margin="@dimen/margin_normal"
+            android:fadeVisible="@{viewModel.hasSelectedPOI}"
+            android:onClick="@{() -> viewModel.saveLocation()}"
+            android:src="@drawable/ic_save"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:focusable="true"
+            android:contentDescription="@string/save" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

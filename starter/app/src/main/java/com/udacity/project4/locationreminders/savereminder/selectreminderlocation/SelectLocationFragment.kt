@@ -45,18 +45,8 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback, GoogleMap.OnP
         val supportMapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         supportMapFragment.getMapAsync(this)
 
-//        TODO: call this function after the user confirms on the selected location
-        onLocationSelected()
-
         return binding.root
     }
-
-    private fun onLocationSelected() {
-        //        TODO: When the user confirms on the selected location,
-        //         send back the selected location details to the view model
-        //         and navigate back to the previous fragment to save the reminder and add the geofence
-    }
-
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.map_options, menu)
@@ -86,7 +76,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback, GoogleMap.OnP
         p0?.let { map ->
             setupMap(map)
             getDeviceLocation(map)
-            _viewModel.selectedPOI.value?.let { poi ->
+            _viewModel.savedPOI.value?.let { poi ->
                 setMarker(poi)
             }
         }
@@ -129,14 +119,14 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback, GoogleMap.OnP
         p0?.let { latLng ->
             val poi = PointOfInterest(latLng, "", "Custom location")
             setMarker(poi)
-            _viewModel.selectedPOI.value = poi
+            _viewModel.selectLocation(poi)
         }
     }
 
     override fun onPoiClick(p0: PointOfInterest?) {
         p0?.let { poi ->
             setMarker(poi)
-            _viewModel.selectedPOI.value = poi
+            _viewModel.selectLocation(poi)
         }
     }
 
