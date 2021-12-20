@@ -4,6 +4,7 @@ import android.app.Application
 import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.local.LocalDB
 import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
+import com.udacity.project4.locationreminders.details.ReminderDescriptionViewModel
 import com.udacity.project4.locationreminders.reminderslist.RemindersListViewModel
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import org.koin.android.ext.koin.androidContext
@@ -31,6 +32,13 @@ class MyApp : Application() {
             single {
                 //This view model is declared singleton to be used across multiple fragments
                 SaveReminderViewModel(
+                    get(),
+                    get() as ReminderDataSource
+                )
+            }
+            single {
+                //This view model is declared singleton to be used across multiple fragments
+                ReminderDescriptionViewModel(
                     get(),
                     get() as ReminderDataSource
                 )
