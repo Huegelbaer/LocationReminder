@@ -22,7 +22,6 @@ import com.udacity.project4.locationreminders.data.local.RemindersLocalRepositor
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -61,7 +60,7 @@ class ReminderListFragmentTest: AutoCloseKoinTest() {
             single {
                 SaveReminderViewModel(appContext, get() as ReminderDataSource)
             }
-            single { RemindersLocalRepository(get()) as ReminderDataSource }
+            single { RemindersLocalRepository(get()) }
             single { LocalDB.createRemindersDao(appContext) }
         }
         startKoin {
@@ -72,7 +71,7 @@ class ReminderListFragmentTest: AutoCloseKoinTest() {
     }
 
     @Test
-    fun clearData_displayNoData() = mainCoroutineRule.runBlockingTest {
+    fun clearData_displayNoData(): Unit = mainCoroutineRule.runBlockingTest {
         // GIVEN - empty reminders
         runBlocking {
             repository.apply {
@@ -88,7 +87,7 @@ class ReminderListFragmentTest: AutoCloseKoinTest() {
     }
 
     @Test
-    fun addOneReminder_displayInUI() = mainCoroutineRule.runBlockingTest {
+    fun addOneReminder_displayInUI(): Unit = mainCoroutineRule.runBlockingTest {
         // GIVEN - empty reminders
         val reminder = ReminderDTO("Test", null, "Location", 50.0, 8.0)
 
