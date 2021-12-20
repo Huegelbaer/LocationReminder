@@ -9,6 +9,7 @@ import androidx.databinding.DataBindingUtil
 import com.udacity.project4.R
 import com.udacity.project4.databinding.ActivityReminderDescriptionBinding
 import com.udacity.project4.locationreminders.reminderslist.ReminderDataItem
+import org.koin.android.ext.android.inject
 
 /**
  * Activity that displays the reminder details after the user clicks on the notification
@@ -27,7 +28,7 @@ class ReminderDescriptionActivity : AppCompatActivity() {
     }
 
     private lateinit var binding: ActivityReminderDescriptionBinding
-    private val viewModel: ReminderDescriptionViewModel by viewModels()
+    private val viewModel: ReminderDescriptionViewModel by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
