@@ -37,7 +37,7 @@ class SaveReminderFragment : BaseFragment() {
 
     companion object {
         private const val REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE = 1
-        private const val REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE = 2
+        const val REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE = 2
     }
 
     private val geofencePendingIntent: PendingIntent by lazy {
@@ -70,7 +70,7 @@ class SaveReminderFragment : BaseFragment() {
         binding.lifecycleOwner = this
         binding.selectLocation.setOnClickListener {
             // Navigate to another fragment to get the user location
-            checkPermissionAndNavigationToSelectLocationIfGranted()
+            navigateToSelectLocation()
         }
 
         binding.saveReminder.setOnClickListener {
