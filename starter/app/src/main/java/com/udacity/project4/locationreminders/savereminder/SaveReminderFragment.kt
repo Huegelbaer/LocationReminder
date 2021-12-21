@@ -36,17 +36,15 @@ class SaveReminderFragment : BaseFragment() {
     private lateinit var binding: FragmentSaveReminderBinding
 
     companion object {
-        private const val REQUEST_LOCATION_PERMISSION = 1
-        private const val REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE = 3
-        private const val REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE = 4
-        private const val REQUEST_TURN_DEVICE_LOCATION_ON = 29
+        private const val REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE = 1
+        private const val REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE = 2
     }
 
     private val geofencePendingIntent: PendingIntent by lazy {
         val intent = Intent(requireContext(), GeofenceBroadcastReceiver::class.java)
         intent.action = GeofenceBroadcastReceiver.ACTION_GEOFENCE_EVENT
-        val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
         } else {
             PendingIntent.FLAG_UPDATE_CURRENT
         }
@@ -107,6 +105,15 @@ class SaveReminderFragment : BaseFragment() {
 
         val geofencingClient = LocationServices.getGeofencingClient(requireContext())
 
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            showMissingPermissionForGeofence()
+            return
+        }
+
         geofencingClient.removeGeofences(geofencePendingIntent)?.run {
             addOnCompleteListener {
                 geofencingClient.addGeofences(geofencingRequest, geofencePendingIntent)?.run {
@@ -160,6 +167,23 @@ class SaveReminderFragment : BaseFragment() {
     private fun navigateToSelectLocation() {
         _viewModel.navigationCommand.value =
             NavigationCommand.To(SaveReminderFragmentDirections.actionSaveReminderFragmentToSelectLocationFragment())
+    }
+
+    private fun showMissingPermissionForGeofence() {
+        Snackbar
+            .make(
+                requireView(),
+                R.string.permission_denied_explanation_geofence,
+                BaseTransientBottomBar.LENGTH_LONG
+            )
+            .setAction(R.string.settings) {
+                startActivity(Intent().apply {
+                    action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                    data = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                })
+            }
+            .show()
     }
 
     private fun showLocationPermissionExplanation() {
