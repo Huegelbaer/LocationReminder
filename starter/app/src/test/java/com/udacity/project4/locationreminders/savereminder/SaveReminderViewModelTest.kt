@@ -67,7 +67,8 @@ class SaveReminderViewModelTest: AutoCloseKoinTest() {
         assertThat(saveReminderViewModel.showToast.getOrAwaitValue(),
             `is`(application.resources.getString(R.string.reminder_saved)))
         assertThat(saveReminderViewModel.addGeofenceEvent.getOrAwaitValue(),
-            `is`(SaveReminderViewModel.Location(title, latitude, longitude)))
+            `is`(SaveReminderViewModel.GeofenceData("1",
+                SaveReminderViewModel.Location(location, latitude, longitude))))
     }
 
     @Test
@@ -76,7 +77,8 @@ class SaveReminderViewModelTest: AutoCloseKoinTest() {
         val latitude = 50.08495200109355
         val longitude = 8.248832360418813
         val poi = PointOfInterest(LatLng(latitude, longitude), "123", location)
-        saveReminderViewModel.selectedPOI.value = poi
+        saveReminderViewModel.selectLocation(poi)
+        saveReminderViewModel.saveLocation()
         assertThat(saveReminderViewModel.selectedLocation.getOrAwaitValue(),
             `is`(SaveReminderViewModel.Location(location, latitude, longitude)))
     }

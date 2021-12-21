@@ -84,9 +84,9 @@ class SaveReminderFragment : BaseFragment() {
             _viewModel.validateAndSaveReminder(data)
         }
 
-        _viewModel.addGeofenceEvent.observe(viewLifecycleOwner, Observer { location ->
-            location?.let {
-                addGeofencingRequest(it.name, it.latitude, it.longitude)
+        _viewModel.addGeofenceEvent.observe(viewLifecycleOwner, Observer { geofenceData ->
+            geofenceData?.let {
+                addGeofencingRequest(it.id, it.location.latitude, it.location.longitude)
             }
         })
     }

@@ -22,15 +22,24 @@ class SaveReminderViewModel(val app: Application, private val dataSource: Remind
 
     private var selectedPOI: PointOfInterest? = null
     val hasSelectedPOI = MutableLiveData(false)
-    val savedPOI = MutableLiveData<PointOfInterest>()
-    val selectedLocation: LiveData<Location> = Transformations.map(savedPOI) {
+
+    private val _savedPOI = MutableLiveData<PointOfInterest>()
+    val savedPOI: LiveData<PointOfInterest>
+            get() = _savedPOI
+
+    val selectedLocation: LiveData<Location> = Transformations.map(_savedPOI) {
         it?.let {
             Location(it.name, it.latLng.latitude, it.latLng.longitude)
         }
     }
-    private val _geofenceEvent = MutableLiveData<Location?>()
-    val addGeofenceEvent: LiveData<Location?>
+    private val _geofenceEvent = MutableLiveData<GeofenceData?>()
+    val addGeofenceEvent: LiveData<GeofenceData?>
         get() = _geofenceEvent
+
+    data class GeofenceData(
+        var id: String,
+        var location: Location
+    )
 
     data class Location(
         var name: String,
@@ -45,9 +54,10 @@ class SaveReminderViewModel(val app: Application, private val dataSource: Remind
     fun onClear() {
         reminderTitle.value = null
         reminderDescription.value = null
-        savedPOI.value = null
+        _savedPOI.value = null
         selectedPOI = null
         hasSelectedPOI.value = false
+        _geofenceEvent.value = null
     }
 
     /**
@@ -56,8 +66,8 @@ class SaveReminderViewModel(val app: Application, private val dataSource: Remind
     fun validateAndSaveReminder(reminderData: ReminderDataItem) {
         if (validateEnteredData(reminderData)) {
             saveReminder(reminderData)
-            _geofenceEvent.value =
-                Location(reminderData.id, reminderData.latitude!!, reminderData.longitude!!)
+            _geofenceEvent.value = GeofenceData(reminderData.id,
+                Location(reminderData.location!!, reminderData.latitude!!, reminderData.longitude!!))
         }
     }
 
@@ -114,7 +124,7 @@ class SaveReminderViewModel(val app: Application, private val dataSource: Remind
 
     fun saveLocation() {
         selectedPOI.let {
-            savedPOI.value = it
+            _savedPOI.value = it
             navigationCommand.value = NavigationCommand.Back
         }
     }
