@@ -23,7 +23,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".locationreminders.details.ReminderDescriptionActivity"></activity>
+        <activity android:name=".locationreminders.details.ReminderDescriptionActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -36,7 +36,8 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_KEY}" />
 
-        <activity android:name=".authentication.AuthenticationActivity">
+        <activity android:name=".authentication.AuthenticationActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
