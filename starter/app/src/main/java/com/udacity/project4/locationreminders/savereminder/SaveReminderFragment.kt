@@ -107,21 +107,6 @@ class SaveReminderFragment : BaseFragment() {
 
         val geofencingClient = LocationServices.getGeofencingClient(requireContext())
 
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return
-        }
-
         geofencingClient.removeGeofences(geofencePendingIntent)?.run {
             addOnCompleteListener {
                 geofencingClient.addGeofences(geofencingRequest, geofencePendingIntent)?.run {
@@ -184,6 +169,13 @@ class SaveReminderFragment : BaseFragment() {
                 R.string.permission_denied_explanation,
                 BaseTransientBottomBar.LENGTH_LONG
             )
+            .setAction(R.string.settings) {
+                startActivity(Intent().apply {
+                    action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                    data = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                })
+            }
             .show()
     }
 
@@ -192,32 +184,13 @@ class SaveReminderFragment : BaseFragment() {
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
-        when (requestCode) {
-            REQUEST_LOCATION_PERMISSION -> {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED &&
-                    (requestCode == REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE && grantResults[1] == PackageManager.PERMISSION_DENIED)) {
-                    navigateToSelectLocation()
-                } else {
-                    Snackbar.make(
-                        requireView(),
-                        R.string.permission_denied_explanation,
-                        Snackbar.LENGTH_INDEFINITE
-                    )
-                        .setAction(R.string.settings) {
-                            startActivity(Intent().apply {
-                                action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                                data = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)
-                                flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                            })
-                        }
-                        .show()
-                }
-                return
-            }
-            else -> {
-                // Ignore all other requests.
-            }
+
+        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+            (requestCode == REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE && grantResults[1] == PackageManager.PERMISSION_DENIED)) {
+                navigateToSelectLocation()
+        } else {
+            showLocationPermissionExplanation()
         }
+        return
     }
 }
