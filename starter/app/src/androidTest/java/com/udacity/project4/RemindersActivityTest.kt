@@ -98,7 +98,7 @@ class RemindersActivityTest :
         onView(withId(R.id.selectLocation)).perform(click())
         onView(withId(R.id.map)).perform(longClick())
         onView(withId(R.id.saveLocation)).perform(click())
-        onView(withId(R.id.selectedLocation)).check(matches(CoreMatchers.not(withText(""))))
+        onView(withId(R.id.selectedLocation)).check(matches(not(withText(""))))
 
         onView(withId(R.id.reminderTitle)).perform(typeText("Title"))
         onView(withId(R.id.reminderDescription)).perform(typeText("Description"))
@@ -126,7 +126,7 @@ class RemindersActivityTest :
         onView(withId(R.id.map)).perform(longClick())
         onView(withId(R.id.saveLocation)).perform(click())
 
-        onView(withId(R.id.selectedLocation)).check(matches(CoreMatchers.not(withText(""))))
+        onView(withId(R.id.selectedLocation)).check(matches(not(withText(""))))
 
         onView(withId(R.id.saveReminder)).perform(click())
 
@@ -138,8 +138,6 @@ class RemindersActivityTest :
 
     @Test
     fun addOneReminder_displayInUI() {
-        val saveReminderViewModel: SaveReminderViewModel = get()
-
         val activityScenario = ActivityScenario.launch(RemindersActivity::class.java)
 
         // GIVEN: Empty reminder list
@@ -152,9 +150,7 @@ class RemindersActivityTest :
         onView(withId(R.id.map)).perform(longClick())
         onView(withId(R.id.saveLocation)).perform(click())
 
-        val selectedLocation = saveReminderViewModel.selectedLocation.value
-        checkNotNull(selectedLocation)
-        onView(withId(R.id.selectedLocation)).check(matches(withText(selectedLocation.name)))
+        onView(withId(R.id.selectedLocation)).check(matches(not(withText(""))))
 
         onView(withId(R.id.reminderTitle)).perform(typeText("Title"))
         onView(withId(R.id.reminderDescription)).perform(typeText("Description"))
@@ -172,7 +168,6 @@ class RemindersActivityTest :
         // THEN: show reminder
         onView(withText("Title")).check(matches(isDisplayed()))
         onView(withText("Description")).check(matches(isDisplayed()))
-        onView(withText(selectedLocation.name)).check(matches(isDisplayed()))
 
         activityScenario.close()
     }
