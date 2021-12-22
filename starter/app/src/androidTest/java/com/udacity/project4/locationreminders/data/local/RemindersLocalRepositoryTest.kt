@@ -68,6 +68,17 @@ class RemindersLocalRepositoryTest {
     }
 
     @Test
+    fun saveReminderAndGetErrorWhenTryToGetReminderByWrongId() = runBlockingTest {
+        val reminder = ReminderDTO("Title", null, "Location", 50.0, 8.0, "GetById")
+        repository.saveReminder(reminder)
+
+        val result = repository.getReminder("GetByWrongId")
+        assertThat(result is Result.Error, `is`(true))
+        val errorMessage = (result as Result.Error).message
+        assertThat(errorMessage, `is`("Reminder not found!"))
+    }
+
+    @Test
     fun updateReminderAndGetById() = runBlockingTest {
         val reminder = ReminderDTO("Title", null, "Location", 50.0, 8.0, "Update")
         repository.saveReminder(reminder)
