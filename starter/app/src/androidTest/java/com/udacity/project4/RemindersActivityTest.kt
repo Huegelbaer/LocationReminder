@@ -1,6 +1,7 @@
 package com.udacity.project4
 
 import android.app.Application
+import android.os.Build
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso
@@ -18,7 +19,7 @@ import com.udacity.project4.locationreminders.data.local.RemindersLocalRepositor
 import com.udacity.project4.locationreminders.reminderslist.RemindersListViewModel
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import kotlinx.coroutines.runBlocking
-import org.hamcrest.CoreMatchers
+import org.hamcrest.CoreMatchers.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -27,9 +28,12 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
-import org.koin.test.AutoCloseKoinTest
 import org.koin.test.KoinTest
 import org.koin.test.get
+import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
+
+import androidx.test.espresso.matcher.RootMatchers.withDecorView
+
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -157,6 +161,13 @@ class RemindersActivityTest :
         Espresso.closeSoftKeyboard()
 
         onView(withId(R.id.saveReminder)).perform(click())
+
+        // Testing Toast failed with android 11 and higher -> https://github.com/android/android-test/issues/803
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
+            onView(withText(R.string.reminder_saved))
+                .inRoot(withDecorView(not(activityTestRule.activity.window.decorView)))
+                .check(matches(isDisplayed()))
+        }
 
         // THEN: show reminder
         onView(withText("Title")).check(matches(isDisplayed()))
