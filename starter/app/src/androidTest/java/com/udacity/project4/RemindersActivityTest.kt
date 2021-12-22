@@ -63,7 +63,7 @@ class RemindersActivityTest :
                     get() as ReminderDataSource
                 )
             }
-            single {
+            viewModel {
                 SaveReminderViewModel(
                     appContext,
                     get() as ReminderDataSource
