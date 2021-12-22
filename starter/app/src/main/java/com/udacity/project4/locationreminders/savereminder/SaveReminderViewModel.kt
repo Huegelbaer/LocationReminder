@@ -20,12 +20,16 @@ class SaveReminderViewModel(val app: Application, private val dataSource: Remind
     val reminderTitle = MutableLiveData<String>()
     val reminderDescription = MutableLiveData<String>()
 
+    private val _reminderId = MutableLiveData<String?>()
+    val reminderId: LiveData<String?>
+        get() = _reminderId
+
     private var selectedPOI: PointOfInterest? = null
     val hasSelectedPOI = MutableLiveData(false)
 
     private val _savedPOI = MutableLiveData<PointOfInterest>()
     val savedPOI: LiveData<PointOfInterest>
-            get() = _savedPOI
+        get() = _savedPOI
 
     val selectedLocation: LiveData<Location> = Transformations.map(_savedPOI) {
         it?.let {
@@ -51,13 +55,14 @@ class SaveReminderViewModel(val app: Application, private val dataSource: Remind
     /**
      * Clear the live data objects to start fresh next time the view model gets called
      */
-    fun onClear() {
+    fun clear() {
         reminderTitle.value = null
         reminderDescription.value = null
         _savedPOI.value = null
         selectedPOI = null
         hasSelectedPOI.value = false
         _geofenceEvent.value = null
+        _reminderId.value = null
     }
 
     /**
@@ -74,8 +79,9 @@ class SaveReminderViewModel(val app: Application, private val dataSource: Remind
     /**
      * Save the reminder to the data source
      */
-    fun saveReminder(reminderData: ReminderDataItem) {
+    private fun saveReminder(reminderData: ReminderDataItem) {
         showLoading.value = true
+        _reminderId.value = reminderData.id
         viewModelScope.launch {
             dataSource.saveReminder(
                 ReminderDTO(
@@ -110,7 +116,6 @@ class SaveReminderViewModel(val app: Application, private val dataSource: Remind
     }
 
     fun onAddGeofenceCompleted() {
-        _geofenceEvent.value = null
     }
 
     fun onAddGeofenceFailed() {

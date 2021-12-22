@@ -29,13 +29,13 @@ import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.udacity.project4.BuildConfig
 import com.udacity.project4.locationreminders.savereminder.SaveReminderFragment
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 
 class SelectLocationFragment : BaseFragment(), OnMapReadyCallback, GoogleMap.OnPoiClickListener, GoogleMap.OnMapLongClickListener {
 
     companion object {
         private const val REQUEST_LOCATION_PERMISSION = 10
-        private const val REQUEST_TURN_DEVICE_LOCATION_ON = 29
     }
 
     //Use Koin to get the view model of the SaveReminder
