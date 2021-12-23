@@ -95,7 +95,6 @@ class SaveReminderViewModel(val app: Application, private val dataSource: Remind
             )
             showLoading.value = false
             showToast.value = app.getString(R.string.reminder_saved)
-            navigationCommand.value = NavigationCommand.Back
         }
     }
 
@@ -116,10 +115,12 @@ class SaveReminderViewModel(val app: Application, private val dataSource: Remind
     }
 
     fun onAddGeofenceCompleted() {
+        navigationCommand.value = NavigationCommand.Back
     }
 
     fun onAddGeofenceFailed() {
         showSnackBarInt.value = R.string.error_adding_geofence
+        navigationCommand.value = NavigationCommand.Back
     }
 
     fun selectLocation(poi: PointOfInterest) {
