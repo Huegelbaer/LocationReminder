@@ -2,8 +2,12 @@ package com.udacity.project4.locationreminders.savereminder.selectreminderlocati
 
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.*
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
@@ -21,9 +25,18 @@ import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
 import org.koin.android.ext.android.inject
 import com.google.android.gms.maps.model.MarkerOptions
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import com.google.android.material.snackbar.BaseTransientBottomBar
+import com.google.android.material.snackbar.Snackbar
+import com.udacity.project4.BuildConfig
+import com.udacity.project4.locationreminders.savereminder.SaveReminderFragment
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 
 class SelectLocationFragment : BaseFragment(), OnMapReadyCallback, GoogleMap.OnPoiClickListener, GoogleMap.OnMapLongClickListener {
+
+    companion object {
+        private const val REQUEST_LOCATION_PERMISSION = 10
+    }
 
     //Use Koin to get the view model of the SaveReminder
     override val _viewModel: SaveReminderViewModel by sharedViewModel()
@@ -76,7 +89,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback, GoogleMap.OnP
     override fun onMapReady(p0: GoogleMap?) {
         p0?.let { map ->
             setupMap(map)
-            getDeviceLocation(map)
+            checkPermissionAndEnableLocationIfGranted()
             _viewModel.savedPOI.value?.let { poi ->
                 setMarker(poi)
             }
@@ -138,5 +151,48 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback, GoogleMap.OnP
                 .position(poi.latLng)
                 .title(poi.name)
         )
+    }
+
+    private fun checkPermissionAndEnableLocationIfGranted() {
+        val isGranted = PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+        if (isGranted) {
+            getDeviceLocation(googleMap)
+        } else {
+            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_LOCATION_PERMISSION)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        when (requestCode) {
+            REQUEST_LOCATION_PERMISSION -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    checkPermissionAndEnableLocationIfGranted()
+                } else {
+                    showLocationPermissionExplanation()
+                }
+            }
+            else -> {}
+        }
+    }
+
+    private fun showLocationPermissionExplanation() {
+        Snackbar
+            .make(
+                requireView(),
+                R.string.permission_denied_explanation,
+                BaseTransientBottomBar.LENGTH_LONG
+            )
+            .setAction(R.string.settings) {
+                startActivity(Intent().apply {
+                    action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                    data = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null)
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                })
+            }
+            .show()
     }
 }
